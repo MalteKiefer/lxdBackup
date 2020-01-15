@@ -132,7 +132,7 @@ main() {
     then
         if [ -z "$GPGPASS" ]
         then
-            echo -e "${ERROR}Archiv: Passphrase not set. Cloud not encrypt archives. ${NC}"
+            echo -e "${ERROR}Archiv: Passphrase not set. Can not encrypt archives. ${NC}"
         else
             if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
                 echo -e "${SUCCSESS}Archiv: Succesfully encrypted ${NC}"
