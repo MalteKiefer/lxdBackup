@@ -4,7 +4,7 @@
 ######### VARS ##########
 #########################
 
-VERSION=0.0.1
+VERSION=0.0.2
 GPG_ENCRYPTION=y
 LOG_FILE="/var/log/lxdbackup.log"
 LOG_FILE_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
@@ -137,6 +137,9 @@ main() {
         else
             if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
                 echo -e "${SUCCSESS}Archiv: Succesfully encrypted ${NC}"
+                echo -e "${SUCCSESS}########################################################## ${NC}"
+                echo -e "${SUCCSESS}### Your GPG Password:$GPGPASS ### ${NC}"
+                echo -e "${SUCCSESS}########################################################## ${NC}"
                 rm  $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
             else
                 echo -e "${ERROR}Archiv: Cloud not encrypt archiv. ${NC}"
@@ -180,6 +183,9 @@ while [ "$1" != "" ]; do
             ;;
         -doa | --delete-old-archives)
             delete_old_archives
+            ;;
+        -p | --pass)
+            GPGPASS=$VALUE
             ;;
         *)
             echo -e "${ERROR}ERROR: unknown parameter \"$PARAM\"${NC}"
