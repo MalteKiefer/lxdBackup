@@ -190,7 +190,7 @@ while [ "$1" != "" ]; do
         *)
             echo -e "${ERROR}ERROR: unknown parameter \"$PARAM\"${NC}"
             usage
-            exit 1LXCIMAGE
+            exit 1
             ;;
     esac
     shift
