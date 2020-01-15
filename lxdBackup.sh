@@ -33,7 +33,7 @@ usage()
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
     echo -e  "\t-h | --help                   show this help message"
-    echo -e  "\t-p | --pass                   password for gpg encryption"
+    echo -e  "\t-p= | --pass=                  password for gpg encryption"
     echo -e  "\t-v | --version                print version & third party version"
     echo -e  ""
 }
@@ -157,9 +157,8 @@ main() {
 ## validate parameters and arguments
 ###
 while [ "$1" != "" ]; do
-    PARAM=`echo $1 | awk -F" " '{print $1}'`
-    if [[ $PARAM == $VALUE ]]; then break; fi
-    VALUE=`echo $1 | awk -F" " '{print $2}'`
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | awk -F= '{print $2}'`
     case $PARAM in
         -h | --help)
             usage
