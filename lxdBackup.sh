@@ -17,7 +17,7 @@ RSYNC=$(which rsync 2> /dev/null)
 GPG=$(which gpg 2> /dev/null)
 GPG_TTY=$(tty)
 ERROR="\033[0;31m [$LOG_FILE_TIMESTAMP] [ERROR] "
-SUCCSESS="\033[0;32m [$LOG_FILE_TIMESTAMP] [INFO]"
+SUCCSESS="\033[0;32m [$LOG_FILE_TIMESTAMP] [INFO] "
 NC="\033[0m"
 
 #########################
@@ -87,7 +87,7 @@ delete_old_archives() {
     if [ ! -d "$WORKDIR" ]; then
         echo -e "${ERROR}Archiv: Auto delete from old archives not possible. There are no archives in the current working dir. Current working dir: ${WORKDIR} ${NC}"
     else
-        if rm $WORKDIR/*; then
+        if rm $WORKDIR/* 2> /dev/null; then
             echo -e "${SUCCSESS}Archiv: Auto delete succesfully. ${NC}"
         else
             echo -e "${ERROR}Archiv: Auto delete not succesfully. ${NC}"
@@ -174,7 +174,7 @@ while [ "$1" != "" ]; do
         *)
             echo -e "${ERROR}ERROR: unknown parameter \"$PARAM\"${NC}"
             usage
-            exit 1
+            exit 1LXCIMAGE
             ;;
     esac
     shift
