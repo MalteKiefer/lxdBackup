@@ -8,14 +8,13 @@ VERSION=0.0.2
 GPG_ENCRYPTION=y
 LOG_FILE="/var/log/lxdbackup.log"
 LOG_FILE_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
-LOG_LEVEL="> /dev/null"
 GPGPASS=""
 WORKDIR="/tmp/lxdbackup"
 BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
-LXC=$(which lxc $LOG_LEVEL)
-AWK=$(which awk $LOG_LEVEL)
-RSYNC=$(which rsync $LOG_LEVEL)
-GPG=$(which gpg $LOG_LEVEL)
+LXC=$(which lxc > /dev/null)
+AWK=$(which awk > /dev/null)
+RSYNC=$(which rsync > /dev/null)
+GPG=$(which gpg > /dev/null)
 GPG_TTY=$(tty)
 ERROR="\033[0;31m [$LOG_FILE_TIMESTAMP] [ERROR] "
 SUCCSESS="\033[0;32m [$LOG_FILE_TIMESTAMP] [INFO] "
@@ -29,7 +28,6 @@ usage()
 {
     echo -e  "$(basename "$0") -- script to backup and sync lxd container to external/internal repo"
     echo -e  ""
-    echo -e  "\t-d | --debug                  debug level: info, error, nothing"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
     echo -e  "\t-h | --help                   show this help message"
@@ -76,10 +74,10 @@ check_software() {
 delete_old_images() {
     for LXCIMAGE in $IMAGELIST
     do
-        if $LXC image delete $LXCIMAGE $LOG_LEVEL; then
+        if $LXC image delete $LXCIMAGE > /dev/null; then
             echo -e "${SUCCSESS}Image: Auto delete from $LXCIMAGE succesfully. ${NC}"
         else
-            echo -e "${ERROR}Image: Cloud not delete $LXCIMAGE. ${NC}"
+            echo -e "${ERROR}Image: Can not delete $LXCIMAGE. ${NC}"
         fi
     done
 }
@@ -88,7 +86,7 @@ delete_old_archives() {
     if [ ! -d "$WORKDIR" ]; then
         echo -e "${ERROR}Archiv: Auto delete from old archives not possible. There are no archives in the current working dir. Current working dir: ${WORKDIR} ${NC}"
     else
-        if rm $WORKDIR/* $LOG_LEVEL; then
+        if rm $WORKDIR/* > /dev/null; then
             echo -e "${SUCCSESS}Archiv: Auto delete succesfully. ${NC}"
         else
             echo -e "${ERROR}Archiv: Auto delete not succesfully. ${NC}"
@@ -105,14 +103,14 @@ main() {
     fi
 
     # Create snapshot with date as name
-    if $LXC snapshot $LXCCONTAINER $BACKUPDATE $LOG_LEVEL; then
+    if $LXC snapshot $LXCCONTAINER $BACKUPDATE > /dev/null; then
         echo -e "${SUCCSESS}Snapshot: Succesfully created snaphot $BACKUPDATE on container $LXCCONTAINER ${NC}"
     else
         echo -e "${ERROR}Snapshot: Could not create snaphot $BACKUPDATE on container $LXCCONTAINER ${NC}"
         return 1
     fi
 
-    if $LXC publish --force $LXCCONTAINER/$BACKUPDATE --alias $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE $LOG_LEVEL; then
+    if $LXC publish --force $LXCCONTAINER/$BACKUPDATE --alias $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE > /dev/null; then
         echo -e "${SUCCSESS}Publish: Succesfully published an image of $LXCCONTAINER-BACKUP-$BACKUPDATE to $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE ${NC}"
     else
         echo -e "${ERROR}Publish: Could not create image from $LXCCONTAINER-BACKUP-$BACKUPDATE to $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE ${NC}"
@@ -121,7 +119,7 @@ main() {
     fi
 
     # Export lxc image to image.tar.gz file.
-    if $LXC image export $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE $LOG_LEVEL; then
+    if $LXC image export $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE > /dev/null; then
         echo -e "${SUCCSESS}Image: Succesfully exported an image of $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
     else
         echo -e "${ERROR}Image: Could not publish image from $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
@@ -142,7 +140,7 @@ main() {
                 echo -e "${SUCCSESS}########################################################## ${NC}"
                 rm  $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
             else
-                echo -e "${ERROR}Archiv: Cloud not encrypt archiv. ${NC}"
+                echo -e "${ERROR}Archiv: Can not encrypt archiv. ${NC}"
                 cleanup
                 exit 1
             fi
@@ -167,15 +165,6 @@ while [ "$1" != "" ]; do
         -v | --version)
             version
             exit
-            ;;
-        -d | --debug)
-            if [[ $VALUE == "info" ]]; then
-              LOG_LEVEL="2> /dev/null"
-            elif [[ $VALUE == "error" ]]; then
-              LOG_LEVEL="1> /dev/null"
-            else
-              LOG_LEVEL="> /dev/null"
-            fi
             ;;
         -doi | --delete-old-images)
             check_software
