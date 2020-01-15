@@ -183,4 +183,7 @@ done
 ## run backup
 ###
 check_software
-main
+for LXCCONTAINER in $CONTAINERLIST
+do
+  main
+done
