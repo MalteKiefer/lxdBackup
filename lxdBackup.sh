@@ -158,6 +158,7 @@ main() {
 ###
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F" " '{print $1}'`
+    if [[ $PARAM == $VALUE ]]; then break; fi
     VALUE=`echo $1 | awk -F" " '{print $2}'`
     case $PARAM in
         -h | --help)
