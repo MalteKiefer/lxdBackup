@@ -104,7 +104,7 @@ main() {
     fi
 
     # Create snapshot with date as name
-    if $LXC snapshot $LXCCONTAINER $BACKUPDATE; then
+    if $LXC snapshot $LXCCONTAINER $BACKUPDATE > /dev/null; then
         echo -e "${SUCCSESS}Snapshot: Succesfully created snaphot $BACKUPDATE on container $LXCCONTAINER ${NC}"
     else
         echo -e "${ERROR}Snapshot: Could not create snaphot $BACKUPDATE on container $LXCCONTAINER ${NC}"
