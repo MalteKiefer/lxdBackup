@@ -122,13 +122,13 @@ sync() {
   then
     if [ -z $SSH_PORT ]
     then
-      if $RSYNC --progress --delete $FILE $RSYNC_PATH > /dev/null; then
+      if $RSYNC --progress --recursive --delete $FILE $RSYNC_PATH > /dev/null; then
         echo -e "${SUCCSESS}SYNC: Sync $FILE succesfully. ${NC}"
       else
         echo -e "${ERROR}SYNC: Cloud not sync $FILE. ${NC}"
       fi
     else
-      if $RSYNC --progress -e "ssh -p$SSH_PORT" --delete $FILE $RSYNC_PATH > /dev/null; then
+      if $RSYNC --progress --recursive -e "ssh -p$SSH_PORT" --delete $FILE $RSYNC_PATH > /dev/null; then
         echo -e "${SUCCSESS}SYNC: Sync $FILE succesfully. ${NC}"
       else
         echo -e "${ERROR}SYNC: Cloud not sync $FILE. ${NC}"
