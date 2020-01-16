@@ -32,14 +32,14 @@ To run the backup program you must start it with one of these parameters:
 The easiest would be to do:
 
 ```bash
-bash lxdBackup.sh --all
+/usr/bin/bash lxdBackup.sh --all
 ```
 
 ## Cron
 To run the software in the cron modus start it with this parameter:
 
 ```bash
-bash lxdBackup.sh --cron
+/usr/bin/bash lxdBackup.sh --cron
 ```
 
 It is important that on of these two paramter is set:
@@ -52,6 +52,7 @@ or
 export LXCCONTAINER=name-of-the-container
 ```
 For GPG support look at the GPG section.
+
 To get a log when you run the program in the cron mode just do something like this in your crontab:
 
 ```
@@ -63,7 +64,7 @@ To get a log when you run the program in the cron mode just do something like th
 To use the GPG encryption you must set the a GPG passphrase as a enviroment variable or at the begining of the script call:
 
 ```bash
-bash lxdBackup.sh --pass=myStrongPassword --all
+/usr/bin/bash lxdBackup.sh --pass=myStrongPassword --all
 ```
 
 **Attention: It is important that the `--pass=` is the first parameter when you call the script!**
@@ -73,5 +74,5 @@ The enviroment variable looks like this:
 ```bash
 export GPGPASS=myStrongPassword
 
-lxdBackup.sh --all
+/usr/bin/bash lxdBackup.sh --all
 ```
