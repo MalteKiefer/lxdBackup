@@ -82,3 +82,17 @@ export GPGPASS=myStrongPassword
 
 /usr/bin/bash lxdBackup.sh --all
 ```
+
+## Log
+
+Sample log output:
+
+```bash
+ [01/16/2020 08:47:54] [INFO] Snapshot: Succesfully created snaphot 01-16-20-08-47 on container proxy
+ [01/16/2020 08:47:54] [INFO] Publish: Succesfully published an image of proxy-BACKUP-01-16-20-08-47 to proxy-BACKUP-01-16-20-08-47-IMAGE
+ [01/16/2020 08:47:54] [INFO] Image: Succesfully exported an image of proxy-BACKUP-01-16-20-08-47-IMAGE to /tmp/lxdbackup/proxy-BACKUP-01-16-20-08-47-IMAGE.tar.gz
+ [01/16/2020 08:47:54] [INFO] Archiv: Succesfully encrypted
+ [01/16/2020 08:47:54] [INFO] ##################################################
+ [01/16/2020 08:47:54] [INFO] ### Your GPG Password: myStrongPassword ###
+ [01/16/2020 08:47:54] [INFO] ##################################################
+ ```
