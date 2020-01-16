@@ -4,7 +4,7 @@
 ######### VARS ##########
 #########################
 
-VERSION=0.0.5
+VERSION=0.1.0
 VERSION_SERVER=$(curl --silent https://codeberg.org/beli3ver/lxdBackup/raw/branch/master/VERSION)
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
@@ -13,6 +13,10 @@ BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
 LXC=$(which lxc 2> /dev/null)
 AWK=$(which awk 2> /dev/null)
 GPG=$(which gpg 2> /dev/null)
+SSH=$(which ssh 2> /dev/null)
+RSYNC=$(which rsync 2> /dev/null)
+SSH_PORT=
+RSYNC_PATH=
 GPG_TTY=$(tty)
 ERROR="\033[0;31m [$LOG_TIMESTAMP] [ERROR] "
 SUCCSESS="\033[0;32m [$LOG_TIMESTAMP] [INFO] "
@@ -32,6 +36,8 @@ usage()
     echo -e  "\t-d= | --dir=                  path to the backup dir"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
+    echo -e  "\t-s= | --sshport=              SSH Port"
+    echo -e  "\t-rs= | --rsyncpath=           Path for rsync target"
     echo -e  "\t-h | --help                   show this help message"
     echo -e  "\t-p= | --pass=                 password for gpg encryption"
     echo -e  "\t-v | --version                print version & third party version"
@@ -69,6 +75,16 @@ check_software() {
         exit 1 ;
     fi
 
+    if [ -z "$SSH" ]; then
+        echo -e "${ERROR}SSH command NOT found?${NC}";
+        exit 1 ;
+    fi
+
+    if [ -z "$RSYNC" ]; then
+        echo -e "${ERROR}RSYNC command NOT found?${NC}";
+        exit 1 ;
+    fi
+
     if [ -z "$LXC" ]; then
         echo -e "${ERROR}LXC command NOT found?${NC}";
         exit 1 ;
@@ -97,6 +113,28 @@ delete_old_archives() {
             echo -e "${ERROR}Archiv: Auto delete not succesfully. ${NC}"
         fi
     fi
+}
+
+sync() {
+  [ -f $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz.gpg ] FILE=$BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz.gpg
+  [ -f $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ] FILE=$BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
+  if [[ -z "$RSYNC_PATH" && -z $RSYNC ]]
+  then
+    if [ -z $SSH_PORT ]
+    then
+      if $RSYNC --progress --delete $FILE $RSYNC_PATH > /dev/null; then
+        echo -e "${SUCCSESS}SYNC: Sync $FILE succesfully. ${NC}"
+      else
+        echo -e "${ERROR}SYNC: Cloud not sync $FILE. ${NC}"
+      fi
+    else
+      if $RSYNC --progress -e "ssh -p$SSH_PORT" --delete $FILE $RSYNC_PATH > /dev/null; then
+        echo -e "${SUCCSESS}SYNC: Sync $FILE succesfully. ${NC}"
+      else
+        echo -e "${ERROR}SYNC: Cloud not sync $FILE. ${NC}"
+      fi
+    fi
+  fi
 }
 
 backup_all() {
@@ -142,6 +180,7 @@ backup() {
         if [ -z "$GPGPASS" ]
         then
             echo -e "${ERROR}Archiv: Passphrase not set. Can not encrypt archives. ${NC}"
+            sync
         else
             if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
                 echo -e "${SUCCSESS}Archiv: Succesfully encrypted ${NC}"
@@ -149,9 +188,10 @@ backup() {
                 echo -e "${SUCCSESS}### Your GPG Password: $GPGPASS ### ${NC}"
                 echo -e "${SUCCSESS}################################################## ${NC}"
                 rm  $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
+                sync
             else
                 echo -e "${ERROR}Archiv: Can not encrypt archiv. ${NC}"
-                exit 1
+                sync
             fi
         fi
     fi
@@ -172,6 +212,12 @@ while [ "$1" != "" ]; do
             ;;
         -d | --dir)
             BACKUPDIR=$VALUE
+            ;;
+        -s | --sshport)
+            SSH_PORT=$VALUE
+            ;;
+        -rs | --rsyncpath)
+            RSYNC_PATH=$VALUE
             ;;
         -a | --all)
             check_software
