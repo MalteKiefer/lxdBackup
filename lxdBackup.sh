@@ -5,6 +5,7 @@
 #########################
 
 VERSION=0.0.3
+VERSION_SERVER=$(curl --quiet https://codeberg.org/beli3ver/lxdBackup/raw/branch/master/VERSION)
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
 if [ -z "$BACKUPDIR" ]; then BACKUPDIR="/tmp/lxdbackup"; fi
@@ -38,7 +39,8 @@ usage()
 }
 
 version() {
-    echo -e  "Version: ${VERSION}"
+    echo -e "Version: ${VERSION}"
+    echo -e "Server Version: ${VERSION_SERVER}"
 }
 
 check_software() {
