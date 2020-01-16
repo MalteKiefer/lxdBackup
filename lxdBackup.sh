@@ -28,6 +28,7 @@ usage()
     echo -e  "$(basename "$0") -- script to backup and sync lxd container to external/internal repo"
     echo -e  ""
     echo -e  "\t-a | --all                    backup all container"
+    echo -e  "\t-c= | --container=            backup container"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
     echo -e  "\t-h | --help                   show this help message"
