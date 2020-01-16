@@ -39,14 +39,14 @@ usage()
 }
 
 version_check() {
-  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+    test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
 }
 
 version() {
     echo -e "Version: ${VERSION}"
     echo -e "Server Version: ${VERSION_SERVER}"
     if version_check ${VERSION_SERVER} ${VERSION}; then
-      echo -e "\033[0;31m[WARNING] You don't have the latest version. Please update to the latest version!\033[0m"
+        echo -e "\033[0;31m[WARNING] You don't have the latest version. Please update to the latest version!\033[0m"
     fi
 }
 
@@ -100,10 +100,10 @@ delete_old_archives() {
 }
 
 backup_all() {
-  for LXCCONTAINER in $CONTAINERLIST
-  do
-    backup
-  done
+    for LXCCONTAINER in $CONTAINERLIST
+    do
+        backup
+    done
 }
 
 backup() {
@@ -181,13 +181,13 @@ while [ "$1" != "" ]; do
             check_software
             if [[ -z "$ALL_CONTAINER" || $ALL_CONTAINER =~ ^[Nn]$ ]]; then
                 if [ -z "$LXCCONTAINER" ]; then
-                  echo -e "${ERROR}No container set, it is not possible to backup anything. Please take a look at the docu.${NC}";
-                  exit 1 ;
+                    echo -e "${ERROR}No container set, it is not possible to backup anything. Please take a look at the docu.${NC}";
+                    exit 1 ;
                 else
-                  backup
+                    backup
                 fi
             else
-              backup_all
+                backup_all
             fi
 
             ;;
