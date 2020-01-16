@@ -25,6 +25,8 @@ To run the backup program you must start it with one of these parameters:
 	-d= | --dir=                  path to the backup dir
 	-doi | --delete-old-images    delete old images
 	-doa | --delete-old-archives  delete old archives
+	-s= | --sshport=              SSH Port
+	-rs= | --rsyncpath=           Path for rsync target
 	-h | --help                   show this help message
 	-p= | --pass=                 password for gpg encryption
 	-v | --version                print version & third party version
