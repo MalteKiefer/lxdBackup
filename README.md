@@ -22,6 +22,7 @@ To run the backup program you must start it with one of these parameters:
 	-a | --all                    backup all container
 	-cj | --cron                  backup script im cron modus, look in the docu for more information
 	-c= | --container=            backup container
+  -d= | --dir=                  path to the backup dir
 	-doi | --delete-old-images    delete old images
 	-doa | --delete-old-archives  delete old archives
 	-h | --help                   show this help message
@@ -51,6 +52,11 @@ or
 ```bash
 export LXCCONTAINER=name-of-the-container
 ```
+optional you can change the backup dir
+```bash
+export BACKUPDIR=/backup/
+```
+
 For GPG support look at the GPG section.
 
 To get a log when you run the program in the cron mode just do something like this in your crontab:

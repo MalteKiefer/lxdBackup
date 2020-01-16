@@ -7,7 +7,7 @@
 VERSION=0.0.3
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
-WORKDIR="/tmp/lxdbackup"
+if [ -z "$BACKUPDIR" ]; then BACKUPDIR="/tmp/lxdbackup" fi
 BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
 LXC=$(which lxc 2> /dev/null)
 AWK=$(which awk 2> /dev/null)
@@ -26,8 +26,9 @@ usage()
     echo -e  "$(basename "$0") -- script to backup and sync lxd container to external/internal repo"
     echo -e  ""
     echo -e  "\t-a | --all                    backup all container"
-    echo -e  "\t-cj | --cron                        backup script im cron modus, look in the docu for more information"
+    echo -e  "\t-cj | --cron                  backup script im cron modus, look in the docu for more information"
     echo -e  "\t-c= | --container=            backup container"
+    echo -e  "\t-d= | --dir=                  path to the backup dir"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
     echo -e  "\t-h | --help                   show this help message"
@@ -78,10 +79,10 @@ delete_old_images() {
 }
 
 delete_old_archives() {
-    if [ ! -d "$WORKDIR" ]; then
-        echo -e "${ERROR}Archiv: Auto delete from old archives not possible. There are no archives in the current working dir. Current working dir: ${WORKDIR} ${NC}"
+    if [ ! -d "$BACKUPDIR" ]; then
+        echo -e "${ERROR}Archiv: Auto delete from old archives not possible. There are no archives in the current working dir. Current working dir: ${BACKUPDIR} ${NC}"
     else
-        if rm $WORKDIR/* > /dev/null; then
+        if rm $BACKUPDIR/* > /dev/null; then
             echo -e "${SUCCSESS}Archiv: Auto delete succesfully. ${NC}"
         else
             echo -e "${ERROR}Archiv: Auto delete not succesfully. ${NC}"
@@ -97,11 +98,11 @@ backup_all() {
 }
 
 backup() {
-    if [ ! -d "$WORKDIR" ]; then
-        mkdir $WORKDIR && cd $WORKDIR
-        echo -e "${SUCCSESS}Backup directory: $WORKDIR created for temporary backup storage ${NC}"
+    if [ ! -d "$BACKUPDIR" ]; then
+        mkdir $BACKUPDIR && cd $BACKUPDIR
+        echo -e "${SUCCSESS}Backup directory: $BACKUPDIR created for temporary backup storage ${NC}"
     else
-        cd $WORKDIR
+        cd $BACKUPDIR
     fi
 
     # Create snapshot with date as name
@@ -121,9 +122,9 @@ backup() {
 
     # Export lxc image to image.tar.gz file.
     if $LXC image export $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE > /dev/null; then
-        echo -e "${SUCCSESS}Image: Succesfully exported an image of $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
+        echo -e "${SUCCSESS}Image: Succesfully exported an image of $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
     else
-        echo -e "${ERROR}Image: Could not publish image from $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
+        echo -e "${ERROR}Image: Could not publish image from $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
         exit 1
     fi
 
@@ -133,12 +134,12 @@ backup() {
         then
             echo -e "${ERROR}Archiv: Passphrase not set. Can not encrypt archives. ${NC}"
         else
-            if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
+            if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
                 echo -e "${SUCCSESS}Archiv: Succesfully encrypted ${NC}"
                 echo -e "${SUCCSESS}################################################## ${NC}"
                 echo -e "${SUCCSESS}### Your GPG Password: $GPGPASS ### ${NC}"
                 echo -e "${SUCCSESS}################################################## ${NC}"
-                rm  $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
+                rm  $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
             else
                 echo -e "${ERROR}Archiv: Can not encrypt archiv. ${NC}"
                 exit 1
@@ -159,6 +160,9 @@ while [ "$1" != "" ]; do
     case $PARAM in
         -p | --pass)
             GPGPASS=$VALUE
+            ;;
+        -d | --dir)
+            BACKUPDIR=$VALUE
             ;;
         -a | --all)
             check_software
