@@ -4,7 +4,7 @@
 ######### VARS ##########
 #########################
 
-VERSION=0.0.4
+VERSION=0.0.5
 VERSION_SERVER=$(curl --silent https://codeberg.org/beli3ver/lxdBackup/raw/branch/master/VERSION)
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
@@ -46,7 +46,7 @@ version() {
     echo -e "Version: ${VERSION}"
     echo -e "Server Version: ${VERSION_SERVER}"
     if version_check ${VERSION_SERVER} ${VERSION}; then
-      echo -e "\033[0;31m [ERROR] You don't have the latest version. Please update to the latest version!\033[0m"
+      echo -e "\033[0;31m[WARNING] You don't have the latest version. Please update to the latest version!\033[0m"
     fi
 }
 
