@@ -4,10 +4,9 @@
 ######### VARS ##########
 #########################
 
-VERSION=0.0.2
+VERSION=0.0.3
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
-GPGPASS=""
 WORKDIR="/tmp/lxdbackup"
 BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
 LXC=$(which lxc 2> /dev/null)
@@ -17,7 +16,6 @@ GPG_TTY=$(tty)
 ERROR="\033[0;31m [$LOG_TIMESTAMP] [ERROR] "
 SUCCSESS="\033[0;32m [$LOG_TIMESTAMP] [INFO] "
 NC="\033[0m"
-LXCCONTAINER=""
 
 #########################
 ####### FUNCTIONS #######
@@ -28,6 +26,7 @@ usage()
     echo -e  "$(basename "$0") -- script to backup and sync lxd container to external/internal repo"
     echo -e  ""
     echo -e  "\t-a | --all                    backup all container"
+    echo -e  "\t-cj | --cron                        backup script im cron modus, look in the docu for more information"
     echo -e  "\t-c= | --container=            backup container"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
@@ -117,7 +116,6 @@ backup() {
         echo -e "${SUCCSESS}Publish: Succesfully published an image of $LXCCONTAINER-BACKUP-$BACKUPDATE to $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE ${NC}"
     else
         echo -e "${ERROR}Publish: Could not create image from $LXCCONTAINER-BACKUP-$BACKUPDATE to $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE ${NC}"
-        cleanup
         return 1
     fi
 
@@ -126,7 +124,6 @@ backup() {
         echo -e "${SUCCSESS}Image: Succesfully exported an image of $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
     else
         echo -e "${ERROR}Image: Could not publish image from $LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE to $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ${NC}"
-        cleanup
         exit 1
     fi
 
@@ -144,7 +141,6 @@ backup() {
                 rm  $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
             else
                 echo -e "${ERROR}Archiv: Can not encrypt archiv. ${NC}"
-                cleanup
                 exit 1
             fi
         fi
@@ -164,18 +160,38 @@ while [ "$1" != "" ]; do
         -a | --all)
             check_software
             backup_all
+            exit
+            ;;
+        -cj | --cron)
+            check_software
+            if [[ -z "$ALL_CONTAINER" || $ALL_CONTAINER =~ ^[Nn]$ ]]; then
+                if [ -z "$LXCCONTAINER" ]; then
+                  echo -e "${ERROR}No container set, it is not possible to backup anything. Please take a look at the docu.${NC}";
+                  exit 1 ;
+                else
+                  backup
+                  exit
+                fi
+            else
+              backup_all
+              exit
+            fi
+
             ;;
         -c | --container)
             check_software
             LXCCONTAINER=$VALUE
             backup
+            exit
             ;;
         -doi | --delete-old-images)
             check_software
             delete_old_images
+            exit
             ;;
         -doa | --delete-old-archives)
             delete_old_archives
+            exit
             ;;
         -h | --help)
             usage
@@ -196,3 +212,5 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+usage
+exit
