@@ -39,8 +39,8 @@ usage()
 }
 
 version() {
-    echo -e "Version: ${SUCCSESS}${VERSION}"
-    echo -e "Server Version: ${SUCCSESS}${VERSION_SERVER}"
+    echo -e "Version: ${VERSION}"
+    echo -e "Server Version: ${VERSION_SERVER}"
 }
 
 check_software() {
