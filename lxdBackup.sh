@@ -7,7 +7,7 @@
 VERSION=0.0.3
 GPG_ENCRYPTION=y
 LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
-if [ -z "$BACKUPDIR" ]; then BACKUPDIR="/tmp/lxdbackup" fi
+if [ -z "$BACKUPDIR" ]; then BACKUPDIR="/tmp/lxdbackup"; fi
 BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
 LXC=$(which lxc 2> /dev/null)
 AWK=$(which awk 2> /dev/null)
