@@ -22,7 +22,7 @@ To run the backup program you must start it with one of these parameters:
 	-a | --all                    backup all container
 	-cj | --cron                  backup script im cron modus, look in the docu for more information
 	-c= | --container=            backup container
-  -d= | --dir=                  path to the backup dir
+	-d= | --dir=                  path to the backup dir
 	-doi | --delete-old-images    delete old images
 	-doa | --delete-old-archives  delete old archives
 	-h | --help                   show this help message
