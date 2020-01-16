@@ -6,18 +6,16 @@
 
 VERSION=0.0.2
 GPG_ENCRYPTION=y
-LOG_FILE="/var/log/lxdbackup.log"
-LOG_FILE_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
+LOG_TIMESTAMP=$(date +"%m/%d/%Y %H:%M:%S")
 GPGPASS=""
 WORKDIR="/tmp/lxdbackup"
 BACKUPDATE=$(date +"%m-%d-%y-%H-%M")
 LXC=$(which lxc 2> /dev/null)
 AWK=$(which awk 2> /dev/null)
-RSYNC=$(which rsync 2> /dev/null)
 GPG=$(which gpg 2> /dev/null)
 GPG_TTY=$(tty)
-ERROR="\033[0;31m [$LOG_FILE_TIMESTAMP] [ERROR] "
-SUCCSESS="\033[0;32m [$LOG_FILE_TIMESTAMP] [INFO] "
+ERROR="\033[0;31m [$LOG_TIMESTAMP] [ERROR] "
+SUCCSESS="\033[0;32m [$LOG_TIMESTAMP] [INFO] "
 NC="\033[0m"
 
 #########################
@@ -51,11 +49,6 @@ check_software() {
 
     if [ -z "$AWK" ]; then
         echo -e "${ERROR}RESTIC command NOT found?${NC}";
-        exit 1 ;
-    fi
-
-    if [ -z "$RSYNC" ]; then
-        echo -e "${ERROR}RSYNC command NOT found?${NC}";
         exit 1 ;
     fi
 
@@ -135,9 +128,9 @@ main() {
         else
             if echo $GPGPASS | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 -c $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; then
                 echo -e "${SUCCSESS}Archiv: Succesfully encrypted ${NC}"
-                echo -e "${SUCCSESS}########################################################## ${NC}"
-                echo -e "${SUCCSESS}### Your GPG Password:$GPGPASS ### ${NC}"
-                echo -e "${SUCCSESS}########################################################## ${NC}"
+                echo -e "${SUCCSESS}################################################## ${NC}"
+                echo -e "${SUCCSESS}### Your GPG Password: $GPGPASS ### ${NC}"
+                echo -e "${SUCCSESS}################################################## ${NC}"
                 rm  $WORKDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz
             else
                 echo -e "${ERROR}Archiv: Can not encrypt archiv. ${NC}"
@@ -177,7 +170,7 @@ while [ "$1" != "" ]; do
             GPGPASS=$VALUE
             ;;
         *)
-            echo -e "${ERROR}ERROR: unknown parameter \"$PARAM\"${NC}"
+            echo -e "${ERROR}Software: unknown parameter \"$PARAM\"${NC}"
             usage
             exit 1
             ;;
