@@ -157,6 +157,9 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
     case $PARAM in
+        -p | --pass)
+            GPGPASS=$VALUE
+            ;;
         -a | --all)
             check_software
             backup_all
@@ -194,9 +197,6 @@ while [ "$1" != "" ]; do
         -v | --version)
             version
             exit
-            ;;
-        -p | --pass)
-            GPGPASS=$VALUE
             ;;
         *)
             echo -e "${ERROR}Software: unknown parameter \"$PARAM\"${NC}"
