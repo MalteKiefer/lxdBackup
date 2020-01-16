@@ -118,7 +118,7 @@ delete_old_archives() {
 sync() {
   if [ -f $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz.gpg ]; then FILE=$BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz.gpg; fi
   if [ -f $BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz ]; then FILE=$BACKUPDIR/$LXCCONTAINER-BACKUP-$BACKUPDATE-IMAGE.tar.gz; fi
-  if [[ -z "$RSYNC_PATH" && -z $RSYNC ]]
+  if [[ ! -z "$RSYNC_PATH" && ! -z $RSYNC ]]
   then
     if [ -z $SSH_PORT ]
     then
