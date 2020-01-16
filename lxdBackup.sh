@@ -45,7 +45,7 @@ version_check() {
 version() {
     echo -e "Version: ${VERSION}"
     echo -e "Server Version: ${VERSION_SERVER}"
-    if version_check $serverversion $version; then
+    if version_check ${VERSION_SERVER} ${VERSION}; then
       echo -e "\033[0;31m [ERROR] You don't have the latest version. Please update to the latest version!\033[0m"
     fi
 }
