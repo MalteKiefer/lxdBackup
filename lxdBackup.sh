@@ -160,7 +160,6 @@ while [ "$1" != "" ]; do
         -a | --all)
             check_software
             backup_all
-            exit
             ;;
         -cj | --cron)
             check_software
@@ -170,11 +169,9 @@ while [ "$1" != "" ]; do
                   exit 1 ;
                 else
                   backup
-                  exit
                 fi
             else
               backup_all
-              exit
             fi
 
             ;;
@@ -182,16 +179,13 @@ while [ "$1" != "" ]; do
             check_software
             LXCCONTAINER=$VALUE
             backup
-            exit
             ;;
         -doi | --delete-old-images)
             check_software
             delete_old_images
-            exit
             ;;
         -doa | --delete-old-archives)
             delete_old_archives
-            exit
             ;;
         -h | --help)
             usage
@@ -212,5 +206,3 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-usage
-exit
