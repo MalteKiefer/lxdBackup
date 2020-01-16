@@ -17,6 +17,7 @@ GPG_TTY=$(tty)
 ERROR="\033[0;31m [$LOG_TIMESTAMP] [ERROR] "
 SUCCSESS="\033[0;32m [$LOG_TIMESTAMP] [INFO] "
 NC="\033[0m"
+LXCCONTAINER=""
 
 #########################
 ####### FUNCTIONS #######
@@ -26,10 +27,11 @@ usage()
 {
     echo -e  "$(basename "$0") -- script to backup and sync lxd container to external/internal repo"
     echo -e  ""
+    echo -e  "\t-a | --all                    backup all container"
     echo -e  "\t-doi | --delete-old-images    delete old images"
     echo -e  "\t-doa | --delete-old-archives  delete old archives"
     echo -e  "\t-h | --help                   show this help message"
-    echo -e  "\t-p= | --pass=                  password for gpg encryption"
+    echo -e  "\t-p= | --pass=                 password for gpg encryption"
     echo -e  "\t-v | --version                print version & third party version"
     echo -e  ""
 }
@@ -87,7 +89,14 @@ delete_old_archives() {
     fi
 }
 
-main() {
+backup_all() {
+  for LXCCONTAINER in $CONTAINERLIST
+  do
+    backup
+  done
+}
+
+backup() {
     if [ ! -d "$WORKDIR" ]; then
         mkdir $WORKDIR && cd $WORKDIR
         echo -e "${SUCCSESS}Backup directory: $WORKDIR created for temporary backup storage ${NC}"
@@ -151,13 +160,14 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
     case $PARAM in
-        -h | --help)
-            usage
-            exit
+        -a | --all)
+            check_software
+            backup_all
             ;;
-        -v | --version)
-            version
-            exit
+        -c | --container)
+            check_software
+            LXCCONTAINER=$VALUE
+            backup
             ;;
         -doi | --delete-old-images)
             check_software
@@ -165,6 +175,14 @@ while [ "$1" != "" ]; do
             ;;
         -doa | --delete-old-archives)
             delete_old_archives
+            ;;
+        -h | --help)
+            usage
+            exit
+            ;;
+        -v | --version)
+            version
+            exit
             ;;
         -p | --pass)
             GPGPASS=$VALUE
@@ -176,12 +194,4 @@ while [ "$1" != "" ]; do
             ;;
     esac
     shift
-done
-
-## run backup
-###
-check_software
-for LXCCONTAINER in $CONTAINERLIST
-do
-  main
 done
